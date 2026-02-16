@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>how sus are you? 🕵️</title>
+  <style>
+    :root{
+      --bg: #0f1220;
+      --card: #171a2b;
+      --text: #e9ebff;
+      --muted: #a7add6;
+      --accent: #7c8eff;
+      --p: 0;        /* percent 0–100 for the meter */
+      --hue: 120;    /* 120 (green) → 0 (red) */
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(60% 60% at 20% 10%, #1a1f3a 0%, rgba(26,31,58,0) 60%),
+        radial-gradient(60% 60% at 80% 90%, #0b0f2a 0%, rgba(11,15,42,0) 60%),
+        var(--bg);
+      display:grid;
+      place-items:center;
+      padding:24px;
+    }
+    body.sunny-mode{
+      background:
+        radial-gradient(60% 60% at 15% 10%, rgba(127, 198, 80, 0.42) 0%, rgba(127, 198, 80, 0) 60%),
+        radial-gradient(70% 70% at 85% 90%, rgba(109, 78, 43, 0.5) 0%, rgba(109, 78, 43, 0) 60%),
+        linear-gradient(160deg, #3f7f33 0%, #6d4e2b 100%);
+    }
+    body.cody-mode{
+      background:
+        radial-gradient(65% 65% at 18% 14%, rgba(128, 255, 112, 0.45) 0%, rgba(128, 255, 112, 0) 62%),
+        radial-gradient(70% 70% at 84% 86%, rgba(112, 72, 34, 0.55) 0%, rgba(112, 72, 34, 0) 62%),
+        linear-gradient(160deg, #2f7a2c 0%, #5e3a1f 100%);
+    }
+    .card{
+      width:min(720px, 100%);
+      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0));
+      border:1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(8px);
+      border-radius:20px;
+      padding:24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    }
+    .card.fly-away{
+      animation: card-fly-away 6s ease-in-out;
+    }
+    @keyframes card-fly-away{
+      0%{
+        transform: translateY(0) rotate(0deg) scale(1);
+        opacity:1;
+      }
+      50%{
+        transform: translateY(-145vh) rotate(-14deg) scale(0.8);
+        opacity:1;
+      }
+      100%{
+        transform: translateY(0) rotate(0deg) scale(1);
+        opacity:1;
+      }
+    }
+    h1{
+      margin:0 0 10px;
+      font-size: clamp(1.4rem, 1rem + 2vw, 2.2rem);
+      letter-spacing: .2px;
+    }
+    p.sub{margin:0 0 18px; color:var(--muted)}
+    form label{display:block; margin-bottom:8px; color:var(--muted); font-size:.95rem}
+    .row{display:flex; gap:10px}
+    input[type="text"]{
+      flex:1;
+      background:#0f1327;
+      border:1px solid rgba(255,255,255,0.12);
+      color:var(--text);
+      border-radius:12px;
+      padding:14px 16px;
+      outline:none;
+      font-size:1rem;
+    }
+    input::placeholder{color:#7c82b5}
+    button{
+      background:linear-gradient(180deg, hsl(250 100% 70%), hsl(250 100% 62%));
+      color:white;
+      border:0;
+      padding:14px 16px;
+      border-radius:12px;
+      font-weight:700;
+      cursor:pointer;
+      transition: transform .06s ease;
+    }
+    button:hover{transform: translateY(-1px)}
+    button:active{transform: translateY(0)}
+    .hidden{display:none}
+
+    /* result section */
+    #result{
+      margin-top:22px;
+      display:grid;
+      gap:18px;
+      grid-template-columns: 220px 1fr;
+      align-items:center;
+    }
+    @media (max-width: 640px){
+      #result{grid-template-columns: 1fr}
+    }
+
+    .meter{
+      width:220px;
+      aspect-ratio:1/1;
+      display:grid;
+      place-items:center;
+      position:relative;
+      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.35));
+    }
+    /* conic progress ring */
+    .ring{
+      --track:#22263f;
+      --fill: hsl(var(--hue) 90% 55%);
+      width:100%;
+      height:100%;
+      border-radius:50%;
+      background:
+        conic-gradient(var(--fill) calc(var(--p)*1%), var(--track) 0);
+      display:grid;
+      place-items:center;
+      transition: background 600ms ease;
+    }
+    .ring.rainbow{
+      --track: rgba(34,38,63,0.35);
+      background: conic-gradient(#ff004d 0deg, #ff7a00 51deg, #ffee00 102deg, #00d84a 153deg, #00cfff 204deg, #3050ff 255deg, #9b3dff 306deg, #ff004d 360deg);
+      animation: spin-rainbow 2.2s linear infinite;
+    }
+    .ring.chicken{
+      --track: #332511;
+      --fill: #ff8a00;
+      animation: none;
+    }
+    .ring.monkey{
+      --track: #2f2216;
+      --fill: #8b5a2b;
+      animation: none;
+    }
+    @keyframes spin-rainbow{
+      to { transform: rotate(360deg); }
+    }
+    .ring::after{
+      content:"";
+      width:70%;
+      height:70%;
+      background:var(--card);
+      border-radius:50%;
+      border:1px solid rgba(255,255,255,0.08);
+      box-shadow: inset 0 0 0 8px rgba(255,255,255,0.03);
+    }
+    .center{
+      position:absolute;
+      text-align:center;
+    }
+    .percent{
+      font-size:2.4rem;
+      font-weight:800;
+      line-height:1;
+    }
+    .label{color:var(--muted); margin-top:6px}
+
+    .stack{display:grid; gap:8px}
+    .verdict{
+      font-size:1.2rem;
+      font-weight:700;
+    }
+    .desc{color:var(--muted)}
+    .actions{display:flex; gap:10px; margin-top:6px}
+    .ghost{
+      background:#0f1327;
+      border:1px solid rgba(255,255,255,0.12);
+    }
+    .note{color:var(--muted); font-size:.9rem; margin-top:6px}
+    .sr-only{position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden}
+
+    #chicken-overlay{
+      position:fixed;
+      inset:0;
+      z-index:9999;
+      display:none;
+      pointer-events:none;
+      background:rgba(24, 12, 0, 0.88);
+      color:#ffbf47;
+      font-size:2rem;
+      line-height:1.25;
+      white-space:pre-wrap;
+      word-break:break-word;
+      overflow:hidden;
+      padding:8px;
+    }
+    #chicken-overlay.active{display:block}
+
+    #secret-page{
+      position:fixed;
+      inset:0;
+      z-index:10001;
+      display:none;
+      background:linear-gradient(160deg, #0e1a12 0%, #1c2a3f 100%);
+      padding:20px;
+      overflow:auto;
+    }
+    body.secret-mode #secret-page{display:block}
+    body.secret-mode .card{display:none}
+    #secret-page h2{margin:0 0 10px}
+    #secret-page .secret-grid{display:grid; gap:10px}
+    #secret-page textarea, #secret-page input{
+      width:100%;
+      background:#0c1224;
+      color:#e9ebff;
+      border:1px solid rgba(255,255,255,0.18);
+      border-radius:10px;
+      padding:10px;
+      font:inherit;
+    }
+    #secret-editor{min-height:250px; font-family:ui-monospace, SFMono-Regular, Menlo, monospace}
+    #secret-chat-embed{
+      width:100%;
+      min-height:520px;
+      border:1px solid rgba(255,255,255,0.16);
+      border-radius:12px;
+      background:#0c1224;
+    }
+    #secret-chat-note{color:var(--muted); font-size:.9rem}
+  </style>
+</head>
+<body>
+  <div id="chicken-overlay" aria-hidden="true"></div>
+  <section id="secret-page" aria-hidden="true">
+    <h2>Secret Editor</h2>
+    <div class="secret-grid">
+      <label for="secret-editor">Edit page HTML</label>
+      <textarea id="secret-editor"></textarea>
+      <div class="actions">
+        <button class="ghost" id="secret-apply" type="button">apply changes</button>
+        <button class="ghost" id="secret-close" type="button">close</button>
+      </div>
+      <div id="secret-chat-note">Embedded ChatGPT (sign in may be required).</div>
+      <iframe id="secret-chat-embed" title="ChatGPT" src="https://chatgpt.com" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+  </section>
+  <main class="card">
+    <h1>how sus are you? 🕵️</h1>
+    <p class="sub">type your name → press scan. 100% legit science* 💀</p>
+
+    <form id="sus-form" autocomplete="off">
+      <label for="name">your name</label>
+      <div class="row">
+        <input id="name" name="name" type="text" placeholder="kai" required minlength="1" />
+        <button type="submit">scan me</button>
+      </div>
+    </form>
+
+    <section id="result" class="hidden" aria-live="polite">
+      <div class="meter" role="img" aria-label="sus meter">
+        <div class="ring" id="ring"></div>
+        <div class="center">
+          <div class="percent" id="percent">0%</div>
+          <div class="label" id="who">—</div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="verdict" id="verdict">calculating…</div>
+        <div class="desc" id="reason"></div>
+
+        <div class="actions">
+          <button class="ghost" id="again" type="button">again</button>
+          <button class="ghost" id="copy" type="button">copy link</button>
+        </div>
+        <p class="note">*not science. for vibes only.</p>
+      </div>
+    </section>
+
+    <p class="sr-only" id="a11y-status"></p>
+  </main>
+
+  <script>
+    const form = document.getElementById('sus-form');
+    const card = document.querySelector('.card');
+    const body = document.body;
+    const input = document.getElementById('name');
+    const result = document.getElementById('result');
+    const ring = document.getElementById('ring');
+    const percentEl = document.getElementById('percent');
+    const whoEl = document.getElementById('who');
+    const verdictEl = document.getElementById('verdict');
+    const reasonEl = document.getElementById('reason');
+    const againBtn = document.getElementById('again');
+    const copyBtn = document.getElementById('copy');
+    const a11y = document.getElementById('a11y-status');
+    const chickenOverlay = document.getElementById('chicken-overlay');
+    const secretPage = document.getElementById('secret-page');
+    const secretEditor = document.getElementById('secret-editor');
+    const secretApplyBtn = document.getElementById('secret-apply');
+    const secretCloseBtn = document.getElementById('secret-close');
+    const secretChatEmbed = document.getElementById('secret-chat-embed');
+    const secretCode = 'kaiisthebestpersonever123';
+    const codyMinecraftUrl = 'https://www.google.com/search?q=minecraft&sca_esv=2df7ce30d2edfc27&sxsrf=ANbL-n51Hd8Q-VwgeE-rbvlB67HmnDo1iw%3A1771273952105&ei=4H6TaamNBu2l2roPjJrrQQ&biw=927&bih=621&ved=0ahUKEwip_dvV7d6SAxXtklYBHQzNOggQ4dUDCBM&uact=5&oq=minecraft&gs_lp=Egxnd3Mtd2l6LXNlcnAiCW1pbmVjcmFmdDIQEC4YgAQYsQMYQxiDARiKBTIKEAAYgAQYQxiKBTIKEAAYgAQYQxiKBTINEC4YgAQYsQMYQxiKBTIKEAAYgAQYQxiKBTIKEAAYgAQYQxiKBTIQEAAYgAQYsQMYQxiDARiKBTIKEAAYgAQYQxiKBTIKEAAYgAQYQxiKBUjNE1CHBVjVEnABeAGQAQCYAY4BoAGcBqoBAzYuM7gBA8gBAPgBAZgCCqACwAaoAgrCAgcQIxgnGOoCwgINECMY8AUYJxjJAhjqAsICChAjGIAEGCcYigXCAhEQLhiABBiRAhjHARiKBRivAcICCxAuGIAEGNEDGMcBwgILEC4YgAQYsQMYgwHCAgsQABiABBixAxiDAcICDhAAGIAEGLEDGIMBGIoFwgIKECMY8AUYJxjJAsICCxAuGIAEGJECGIoFwgILEAAYgAQYkQIYigXCAgoQLhiABBhDGIoFwgINEAAYgAQYsQMYQxiKBZgDAvEFvfZjE7_Ng3uSBwM3LjOgB_V8sgcDNi4zuAe-BsIHBTAuNy4zyAcbgAgA&sclient=gws-wiz-serp';
+    let chickenOverlayTimer = null;
+    let codyOpenTimer = null;
+
+    // deterministic hash → 0..100
+    function djb2(str){
+      let h = 5381;
+      for (let i=0;i<str.length;i++){
+        h = ((h << 5) + h) ^ str.charCodeAt(i);
+      }
+      return Math.abs(h);
+    }
+    function normalizeName(name){
+      return (name || '').trim().toLowerCase().replace(/[’‘`´]/g, "'");
+    }
+    function nameToPercent(name){
+      if(!name) return 0;
+      const h = djb2(normalizeName(name));
+      return h % 101; // 0..100
+    }
+    function percentToHue(p){
+      // 120 (green) → 0 (red)
+      return Math.round(120 - (120 * (p/100)));
+    }
+    function verdictFor(p){
+      if (p <= 15) return ["innocent fr 🕊️", "zero impostor energy. carry on, king."];
+      if (p <= 35) return ["ehhh watchin' u 👀", "nothing major… yet. we see u tho."];
+      if (p <= 60) return ["kinda sus ngl 🤨", "vibes questionable. proceed with caution."];
+      if (p <= 85) return ["big sus ⚠️", "alarms pinging. u got explaining to do."];
+      return ["impostor energy 🚨", "red is following u in electrical, bro."];
+    }
+
+    function animateTo(meterTarget, finalDisplayPercent, finalLabel){
+      // animate CSS var --p to the visual meter target (0..100)
+      const start = parseFloat(getComputedStyle(ring).getPropertyValue('--p')) || 0;
+      const startTime = performance.now();
+      const duration = 800; // ms
+      function frame(now){
+        const t = Math.min(1, (now - startTime) / duration);
+        const cur = Math.round(start + (meterTarget - start) * t);
+        ring.style.setProperty('--p', cur);
+        ring.style.setProperty('--hue', percentToHue(cur));
+        percentEl.textContent = finalLabel || (cur + "%");
+        if (t < 1) {
+          requestAnimationFrame(frame);
+          return;
+        }
+        percentEl.textContent = finalLabel || (finalDisplayPercent + "%");
+      }
+      requestAnimationFrame(frame);
+    }
+
+    function openSecretPage(){
+      secretEditor.value = document.documentElement.outerHTML;
+      body.classList.add('secret-mode');
+      secretPage.setAttribute('aria-hidden', 'false');
+      // reload embed each open so auth/session state refreshes
+      secretChatEmbed.src = 'https://chatgpt.com';
+    }
+
+    function scan(name){
+      const normalized = normalizeName(name);
+      let displayPercent;
+      let meterPercent;
+      let title;
+      let desc;
+      let finalPercentLabel = null;
+
+      ring.classList.remove('rainbow');
+      ring.classList.remove('chicken');
+      ring.classList.remove('monkey');
+      body.classList.remove('sunny-mode');
+      body.classList.remove('cody-mode');
+      body.classList.remove('secret-mode');
+      secretPage.setAttribute('aria-hidden', 'true');
+      card.classList.remove('fly-away');
+      chickenOverlay.classList.remove('active');
+      if (chickenOverlayTimer) {
+        clearTimeout(chickenOverlayTimer);
+        chickenOverlayTimer = null;
+      }
+      if (codyOpenTimer) {
+        clearTimeout(codyOpenTimer);
+        codyOpenTimer = null;
+      }
+
+      if (normalized === secretCode) {
+        openSecretPage();
+        return;
+      } else if (normalized === 'zain') {
+        displayPercent = 1000000;
+        meterPercent = 100;
+        title = 'MAXIMUM SUS 🚨';
+        desc = 'Zain is a poopyface.';
+      } else if (normalized === 'kai') {
+        displayPercent = 0;
+        meterPercent = displayPercent;
+        title = 'I AM THE CREATOR OF THIS GAMEE';
+        desc = 'Kai has creator privileges.';
+      } else if (normalized === 'jacob') {
+        displayPercent = 67;
+        meterPercent = 67;
+        title = 'fixed sus reading 📈';
+        desc = 'I LOVE 67, 67, 67 67 6 7 67 67 76 76 67';
+      } else if (normalized === 'jamie') {
+        displayPercent = 100;
+        meterPercent = 100;
+        title = 'maximum sus mode 🚨';
+        desc = 'im going to snort at you!!!!!';
+      } else if (normalized === 'avyn') {
+        displayPercent = 100;
+        meterPercent = 100;
+        title = 'rainbow sus mode 🌈';
+        desc = 'I LOVE FRUITY PEBBLES!!!';
+        ring.classList.add('rainbow');
+      } else if (normalized === 'sunny') {
+        displayPercent = 100;
+        meterPercent = 100;
+        title = 'minecraft mode 🟩';
+        desc = 'I LOVE FAKE MINECRAFT';
+        finalPercentLabel = 'MINECRAFTTTT!!!';
+        body.classList.add('sunny-mode');
+      } else if (normalized === 'jaxon') {
+        displayPercent = 100;
+        meterPercent = 100;
+        title = 'IM A TRYHARD SPAMMER';
+        desc = 'IM A TRYHARD SPAMMER';
+        finalPercentLabel = 'STOP SPAMMING';
+      } else if (normalized === 'ray' || normalized === 'raymond') {
+        displayPercent = 100;
+        meterPercent = 100;
+        title = 'CHICKEN MUNCHER, STOP EATING CHICKEN';
+        desc = 'CHICKEN MUNCHER, STOP EATING CHICKEN';
+        finalPercentLabel = '🍗';
+        ring.classList.add('chicken');
+        chickenOverlay.textContent = ('🍗 ').repeat(2000);
+        chickenOverlay.classList.add('active');
+        chickenOverlayTimer = setTimeout(()=>{
+          chickenOverlay.classList.remove('active');
+          chickenOverlayTimer = null;
+        }, 3000);
+      } else if (normalized === 'mercy') {
+        displayPercent = 100;
+        meterPercent = 100;
+        title = 'why are you on this website, get off';
+        desc = 'why are you on this website, get off';
+      } else if (normalized === 'eli') {
+        displayPercent = 100;
+        meterPercent = 100;
+        title = 'why are you weird?';
+        desc = 'why are you weird?';
+      } else if (normalized === 'bara') {
+        displayPercent = 100;
+        meterPercent = 100;
+        title = 'stop being annoying and mocking me in a zesty voice';
+        desc = 'stop being annoying and mocking me in a zesty voice';
+      } else if (normalized === 'qais') {
+        displayPercent = 100;
+        meterPercent = 100;
+        title = 'CASEOH FATAHH BOY';
+        desc = 'CASEOH FATAHH BOY';
+      } else if (normalized === 'logan') {
+        displayPercent = 100;
+        meterPercent = 100;
+        title = 'Short king';
+        desc = 'Short king';
+      } else if (normalized === 'micheal') {
+        displayPercent = 100;
+        meterPercent = 100;
+        title = 'so remember when you thought i kept saying ribbit, i was saying ribbit, it was rage bait';
+        desc = 'so remember when you thought i kept saying ribbit, i was saying ribbit, it was rage bait';
+      } else if (normalized === 'cody') {
+        displayPercent = 100;
+        meterPercent = 100;
+        title = 'GET OFF OF MINECRAFT, CODY!';
+        desc = 'GET OFF OF MINECRAFT, CODY!';
+        body.classList.add('cody-mode');
+        card.classList.add('fly-away');
+        codyOpenTimer = setTimeout(()=>{
+          window.open(codyMinecraftUrl, '_blank', 'noopener,noreferrer');
+          codyOpenTimer = null;
+        }, 5000);
+      } else if (normalized === "ka'zi") {
+        displayPercent = 100;
+        meterPercent = 100;
+        title = 'MONKEYYYYYYYYYY';
+        desc = 'MONKEYYYYYYYYYY';
+        finalPercentLabel = '🐵';
+        ring.classList.add('monkey');
+        chickenOverlay.textContent = ('🐵 ').repeat(2000);
+        chickenOverlay.classList.add('active');
+        chickenOverlayTimer = setTimeout(()=>{
+          chickenOverlay.classList.remove('active');
+          chickenOverlayTimer = null;
+        }, 3000);
+      } else {
+        displayPercent = nameToPercent(name);
+        meterPercent = displayPercent;
+        [title, desc] = verdictFor(displayPercent);
+      }
+
+      // update visuals
+      result.classList.remove('hidden');
+      whoEl.textContent = name || "mystery guest";
+      verdictEl.textContent = title;
+      reasonEl.textContent = desc;
+      animateTo(meterPercent, displayPercent, finalPercentLabel);
+
+      // update URL so it's shareable
+      const url = new URL(location.href);
+      url.searchParams.set('name', name);
+      history.replaceState(null, "", url.toString());
+      a11y.textContent = name + " is " + (finalPercentLabel || (displayPercent + "%")) + " sus: " + title;
+    }
+
+    // submit handler
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const name = input.value.trim();
+      if(!name) return;
+      scan(name);
+    });
+
+    // again button resets focus
+    againBtn.addEventListener('click', ()=>{
+      input.focus();
+      input.select();
+    });
+
+    // copy share link
+    copyBtn.addEventListener('click', async ()=>{
+      try{
+        await navigator.clipboard.writeText(location.href);
+        copyBtn.textContent = "copied ✅";
+        setTimeout(()=>copyBtn.textContent = "copy link", 1400);
+      }catch{
+        alert("couldn't copy, sorry bro. just grab the address bar.");
+      }
+    });
+
+    secretApplyBtn.addEventListener('click', ()=>{
+      const edited = secretEditor.value || '';
+      if (!edited.trim()) return;
+      document.open();
+      document.write(edited);
+      document.close();
+    });
+
+    secretCloseBtn.addEventListener('click', ()=>{
+      body.classList.remove('secret-mode');
+      secretPage.setAttribute('aria-hidden', 'true');
+    });
+
+    // auto-run if ?name= is present
+    const params = new URLSearchParams(location.search);
+    const pre = params.get('name');
+    if (pre){
+      input.value = pre;
+      scan(pre);
+    } else {
+      // focus input on load for fast vibes
+      setTimeout(()=>input.focus(), 100);
+    }
+  </script>
+</body>
+</html>
