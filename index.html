@@ -40,6 +40,16 @@
         radial-gradient(70% 70% at 84% 86%, rgba(112, 72, 34, 0.55) 0%, rgba(112, 72, 34, 0) 62%),
         linear-gradient(160deg, #2f7a2c 0%, #5e3a1f 100%);
     }
+    body.light-mode{
+      --bg: #eef2ff;
+      --card: #ffffff;
+      --text: #171a2b;
+      --muted: #5d678e;
+      background:
+        radial-gradient(60% 60% at 20% 10%, #dfe6ff 0%, rgba(223,230,255,0) 60%),
+        radial-gradient(60% 60% at 80% 90%, #e8edf9 0%, rgba(232,237,249,0) 60%),
+        var(--bg);
+    }
     .card{
       width:min(720px, 100%);
       background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0));
@@ -66,6 +76,31 @@
         opacity:1;
       }
     }
+    .topbar{display:flex; align-items:center; justify-content:space-between; gap:12px}
+    #theme-toggle{padding:10px 12px; font-size:.9rem}
+    body.light-mode .card{
+      border:1px solid rgba(20,30,60,0.12);
+      box-shadow: 0 20px 50px rgba(31,44,84,0.15);
+    }
+    body.light-mode input[type="text"]{
+      background:#f6f8ff;
+      border:1px solid rgba(28,40,84,0.2);
+      color:var(--text);
+    }
+    body.light-mode input::placeholder{color:#7b86b2}
+    body.light-mode .ghost{
+      background:#f6f8ff;
+      border:1px solid rgba(28,40,84,0.2);
+      color:var(--text);
+    }
+body.light-mode .ring{
+  --track: #c7ccd8;
+}
+body.light-mode .ring::after{
+  background:#edf0f6;
+  border:1px solid rgba(58,66,90,0.2);
+  box-shadow: inset 0 0 0 8px rgba(255,255,255,0.5);
+}
     h1{
       margin:0 0 10px;
       font-size: clamp(1.4rem, 1rem + 2vw, 2.2rem);
@@ -250,7 +285,10 @@
     </div>
   </section>
   <main class="card">
-    <h1>how sus are you? 🕵️</h1>
+    <div class="topbar">
+      <h1>how sus are you? 🕵️</h1>
+      <button class="ghost" id="theme-toggle" type="button">light mode</button>
+    </div>
     <p class="sub">type your name → press scan. 100% legit science* 💀</p>
 
     <form id="sus-form" autocomplete="off">
@@ -298,6 +336,7 @@
     const reasonEl = document.getElementById('reason');
     const againBtn = document.getElementById('again');
     const copyBtn = document.getElementById('copy');
+    const themeToggleBtn = document.getElementById('theme-toggle');
     const a11y = document.getElementById('a11y-status');
     const chickenOverlay = document.getElementById('chicken-overlay');
     const secretPage = document.getElementById('secret-page');
@@ -336,6 +375,13 @@
       if (p <= 60) return ["kinda sus ngl 🤨", "vibes questionable. proceed with caution."];
       if (p <= 85) return ["big sus ⚠️", "alarms pinging. u got explaining to do."];
       return ["impostor energy 🚨", "red is following u in electrical, bro."];
+    }
+
+    function applyTheme(mode){
+      const light = mode === 'light';
+      body.classList.toggle('light-mode', light);
+      themeToggleBtn.textContent = light ? 'dark mode' : 'light mode';
+      localStorage.setItem('themeMode', light ? 'light' : 'dark');
     }
 
     function animateTo(meterTarget, finalDisplayPercent, finalLabel){
@@ -520,6 +566,14 @@
       history.replaceState(null, "", url.toString());
       a11y.textContent = name + " is " + (finalPercentLabel || (displayPercent + "%")) + " sus: " + title;
     }
+
+    const savedTheme = localStorage.getItem('themeMode');
+    applyTheme(savedTheme === 'light' ? 'light' : 'dark');
+
+    themeToggleBtn.addEventListener('click', ()=>{
+      const next = body.classList.contains('light-mode') ? 'dark' : 'light';
+      applyTheme(next);
+    });
 
     // submit handler
     form.addEventListener('submit', (e)=>{
