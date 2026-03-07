@@ -412,7 +412,6 @@ body.light-mode .ring::after{
           <button class="ghost" id="again" type="button">again</button>
           <button class="ghost" id="copy" type="button">copy link</button>
         </div>
-        <p class="note">*not science. for vibes only.</p>
       </div>
     </section>
 
@@ -704,6 +703,11 @@ if (normalized === secretCode) {
           chickenOverlay.classList.remove('active');
           chickenOverlayTimer = null;
         }, 3000);
+      } else if (normalized === 'gaby' || normalized === 'gabriella') {
+        displayPercent = 100;
+        meterPercent = 100;
+        title = 'For Gaby D, you are addicted to 67 and for Gabby V, you are a weirdo and get tf off this site';
+        desc = 'For Gaby D, you are addicted to 67 and for Gabby V, you are a weirdo and get tf off this site';
       } else if (normalized === 'mercy') {
         displayPercent = 100;
         meterPercent = 100;
