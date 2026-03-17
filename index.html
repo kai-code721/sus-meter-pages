@@ -189,6 +189,65 @@ body.light-mode .ring::after{
       --fill: #8b5a2b;
       animation: none;
     }
+    .ring.zain-split{
+      --track: rgba(34,38,63,0.35);
+      background: linear-gradient(90deg, #ffd83d 0 50%, #2c71ff 50% 100%);
+      animation:none;
+    }
+    #monkey-float{
+      position:fixed;
+      inset:0;
+      z-index:10010;
+      pointer-events:none;
+      overflow:hidden;
+    }
+    .monkey-floater{
+      position:absolute;
+      top:-12vh;
+      font-size:clamp(1.4rem, 3vw, 2.2rem);
+      animation: monkey-drift linear forwards;
+      user-select:none;
+    }
+    @keyframes monkey-drift{
+      from{ transform: translate3d(0, 105vh, 0) rotate(0deg); opacity:.95; }
+      to{ transform: translate3d(0, -18vh, 0) rotate(16deg); opacity:0; }
+    }
+    #bella-float{
+      position:fixed;
+      inset:0;
+      z-index:10011;
+      pointer-events:none;
+      overflow:hidden;
+    }
+    .bella-floater{
+      position:absolute;
+      top:-12vh;
+      font-size:clamp(1.2rem, 2.8vw, 2rem);
+      animation: bella-drift linear forwards;
+      user-select:none;
+    }
+    @keyframes bella-drift{
+      from{ transform: translate3d(0, 105vh, 0) rotate(0deg); opacity:.96; }
+      to{ transform: translate3d(0, -18vh, 0) rotate(-16deg); opacity:0; }
+    }
+    #zain-float{
+      position:fixed;
+      inset:0;
+      z-index:10012;
+      pointer-events:none;
+      overflow:hidden;
+    }
+    .zain-floater{
+      position:absolute;
+      top:-12vh;
+      font-size:clamp(1.2rem, 2.8vw, 2rem);
+      animation: zain-drift linear forwards;
+      user-select:none;
+    }
+    @keyframes zain-drift{
+      from{ transform: translate3d(0, 105vh, 0) rotate(0deg); opacity:.96; }
+      to{ transform: translate3d(0, -18vh, 0) rotate(18deg); opacity:0; }
+    }
     @keyframes spin-rainbow{
       to { transform: rotate(360deg); }
     }
@@ -359,6 +418,9 @@ body.light-mode .ring::after{
 </head>
 <body>
   <div id="chicken-overlay" aria-hidden="true"></div>
+  <div id="monkey-float" aria-hidden="true"></div>
+  <div id="bella-float" aria-hidden="true"></div>
+  <div id="zain-float" aria-hidden="true"></div>
   <div id="cry-rain" aria-hidden="true"></div>
 <section id="fate-overlay" aria-hidden="true">
   <div class="fate-panel">
@@ -436,6 +498,9 @@ const a11y = document.getElementById('a11y-status');
 const fateOverlay = document.getElementById('fate-overlay');
 const fateSorryInput = document.getElementById('fate-sorry-input');
 const cryRain = document.getElementById('cry-rain');
+const monkeyFloat = document.getElementById('monkey-float');
+const bellaFloat = document.getElementById('bella-float');
+const zainFloat = document.getElementById('zain-float');
     const chickenOverlay = document.getElementById('chicken-overlay');
     const secretPage = document.getElementById('secret-page');
     const secretEditor = document.getElementById('secret-editor');
@@ -448,6 +513,9 @@ let chickenOverlayTimer = null;
 let codyOpenTimer = null;
 let eraseTimer = null;
 let typeTimer = null;
+let monkeyFloatTimer = null;
+let bellaFloatTimer = null;
+let zainFloatTimer = null;
 let lastScannedNormalized = '';
 let againCountForName = 0;
 let fateLockActive = false;
@@ -548,6 +616,80 @@ function runSlowErase(){
   }, 140);
 }
 
+function startMonkeyFloat(){
+  monkeyFloat.textContent = '';
+  const total = 26;
+  for (let i = 0; i < total; i++) {
+    const floater = document.createElement('span');
+    floater.className = 'monkey-floater';
+    floater.textContent = '🐵';
+    floater.style.left = (Math.random() * 94).toFixed(2) + 'vw';
+    floater.style.animationDuration = (5.5 + Math.random() * 4.5).toFixed(2) + 's';
+    floater.style.animationDelay = (Math.random() * 1.8).toFixed(2) + 's';
+    floater.style.opacity = String(0.72 + Math.random() * 0.28);
+    floater.addEventListener('animationend', ()=> floater.remove(), { once: true });
+    monkeyFloat.appendChild(floater);
+  }
+
+  if (monkeyFloatTimer) {
+    clearTimeout(monkeyFloatTimer);
+  }
+  monkeyFloatTimer = setTimeout(()=>{
+    monkeyFloat.textContent = '';
+    monkeyFloatTimer = null;
+  }, 10000);
+}
+
+function startBellaFloat(){
+  bellaFloat.textContent = '';
+  const items = ['💖','🌈','💕','🩷','💘','🌈'];
+  const total = 34;
+  for (let i = 0; i < total; i++) {
+    const floater = document.createElement('span');
+    floater.className = 'bella-floater';
+    floater.textContent = items[i % items.length];
+    floater.style.left = (Math.random() * 94).toFixed(2) + 'vw';
+    floater.style.animationDuration = (5 + Math.random() * 4.5).toFixed(2) + 's';
+    floater.style.animationDelay = (Math.random() * 1.6).toFixed(2) + 's';
+    floater.style.opacity = String(0.72 + Math.random() * 0.28);
+    floater.addEventListener('animationend', ()=> floater.remove(), { once: true });
+    bellaFloat.appendChild(floater);
+  }
+
+  if (bellaFloatTimer) {
+    clearTimeout(bellaFloatTimer);
+  }
+  bellaFloatTimer = setTimeout(()=>{
+    bellaFloat.textContent = '';
+    bellaFloatTimer = null;
+  }, 10000);
+}
+
+function startZainFloat(){
+  zainFloat.textContent = '';
+  const items = ['🥷','🐬','🥷','🐬','🥷','🐬'];
+  const total = 34;
+  for (let i = 0; i < total; i++) {
+    const floater = document.createElement('span');
+    floater.className = 'zain-floater';
+    floater.textContent = items[i % items.length];
+    floater.style.left = (Math.random() * 94).toFixed(2) + 'vw';
+    floater.style.animationDuration = (5 + Math.random() * 4.8).toFixed(2) + 's';
+    floater.style.animationDelay = (Math.random() * 1.6).toFixed(2) + 's';
+    floater.style.opacity = String(0.72 + Math.random() * 0.28);
+    floater.addEventListener('animationend', ()=> floater.remove(), { once: true });
+    zainFloat.appendChild(floater);
+  }
+
+  if (zainFloatTimer) {
+    clearTimeout(zainFloatTimer);
+  }
+  zainFloatTimer = setTimeout(()=>{
+    zainFloat.textContent = '';
+    zainFloatTimer = null;
+  }, 10000);
+}
+
 function triggerMeltingAftermath(){
   if (meltSequenceActive) return;
   meltSequenceActive = true;
@@ -609,6 +751,7 @@ function scan(name){
 ring.classList.remove('rainbow');
 ring.classList.remove('chicken');
 ring.classList.remove('monkey');
+ring.classList.remove('zain-split');
 againBtn.classList.remove('corner-run');
       body.classList.remove('sunny-mode');
       body.classList.remove('cody-mode');
@@ -625,6 +768,18 @@ if (codyOpenTimer) {
   clearTimeout(codyOpenTimer);
   codyOpenTimer = null;
 }
+if (monkeyFloatTimer) {
+  clearTimeout(monkeyFloatTimer);
+  monkeyFloatTimer = null;
+}
+if (bellaFloatTimer) {
+  clearTimeout(bellaFloatTimer);
+  bellaFloatTimer = null;
+}
+if (zainFloatTimer) {
+  clearTimeout(zainFloatTimer);
+  zainFloatTimer = null;
+}
 if (eraseTimer) {
   clearInterval(eraseTimer);
   eraseTimer = null;
@@ -638,6 +793,9 @@ if (meltSequenceTimer) {
   meltSequenceTimer = null;
 }
 againBtn.classList.remove('again-float');
+monkeyFloat.textContent = '';
+bellaFloat.textContent = '';
+zainFloat.textContent = '';
 cryRain.textContent = '';
 meltSequenceActive = false;
 if (!fateLockActive) {
@@ -654,8 +812,10 @@ if (normalized === secretCode) {
       } else if (normalized === 'zain') {
         displayPercent = 1000000;
         meterPercent = 100;
-        title = 'MAXIMUM SUS 🚨';
-        desc = 'Zain is a poopyface.';
+        title = 'MASSIVE';
+        desc = 'LOW TAPER FADEEE';
+        ring.classList.add('zain-split');
+        startZainFloat();
       } else if (normalized === 'kai') {
         displayPercent = 0;
         meterPercent = displayPercent;
@@ -708,6 +868,12 @@ if (normalized === secretCode) {
         meterPercent = 100;
         title = 'For Gaby D, you are addicted to 67 and for Gabby V, you are a weirdo and get tf off this site';
         desc = 'For Gaby D, you are addicted to 67 and for Gabby V, you are a weirdo and get tf off this site';
+      } else if (normalized === 'bella' || normalized === 'isabella' || normalized === 'bellybutton') {
+        displayPercent = 100;
+        meterPercent = 100;
+        title = 'KI_R_';
+        desc = 'KI_R_';
+        startBellaFloat();
       } else if (normalized === 'mercy') {
         displayPercent = 100;
         meterPercent = 100;
@@ -743,6 +909,12 @@ if (normalized === secretCode) {
         meterPercent = 100;
         title = "absolute chicken muncher, can't stop eating all that watermelon";
         desc = "absolute chicken muncher, can't stop eating all that watermelon";
+      } else if (normalized === 'tyilyk') {
+        displayPercent = 100;
+        meterPercent = 100;
+        title = 'bootyhole man';
+        desc = 'bootyhole man';
+        startMonkeyFloat();
       } else if (normalized === 'delanie') {
         displayPercent = 100;
         meterPercent = 100;
