@@ -127,6 +127,7 @@ body.light-mode .ring::after{
       font-size:1rem;
     }
     input::placeholder{color:#7c82b5}
+    .warning{margin:10px 0 0; color:#ffb4b4; font-size:.92rem}
     button{
       background:linear-gradient(180deg, hsl(250 100% 70%), hsl(250 100% 62%));
       color:white;
@@ -455,6 +456,7 @@ body.light-mode .ring::after{
         <input id="name" name="name" type="text" placeholder="kai" required minlength="1" />
         <button type="submit">scan me</button>
       </div>
+      <p class="warning hidden" id="filter-warning">Warning: blocked language was censored.</p>
     </form>
 
     <section id="result" class="hidden" aria-live="polite">
@@ -486,6 +488,7 @@ body.light-mode .ring::after{
     const body = document.body;
     const input = document.getElementById('name');
     const result = document.getElementById('result');
+    const filterWarning = document.getElementById('filter-warning');
     const ring = document.getElementById('ring');
     const percentEl = document.getElementById('percent');
     const whoEl = document.getElementById('who');
@@ -538,6 +541,43 @@ let meltSequenceTimer = null;
       const h = djb2(normalizeName(name));
       return h % 101; // 0..100
     }
+    const blockedWordPatterns = [
+      /shit/gi,
+      /fuck/gi,
+      /damn/gi,
+      /bitch/gi,
+      /asshole/gi,
+      /bastard/gi,
+      /slut/gi,
+      /dick/gi,
+      /cunt/gi,
+      /nigg[a-z]*/gi,
+      /fagg?[a-z]*/gi,
+      /chink/gi,
+      /spic/gi
+    ];
+
+    function censorBlockedWords(value){
+      let changed = false;
+      let next = value;
+      for (const pattern of blockedWordPatterns) {
+        next = next.replace(pattern, (match)=>{
+          changed = true;
+          return '#'.repeat(match.length);
+        });
+      }
+      return { value: next, changed };
+    }
+
+    function applyInputFilter(){
+      const filtered = censorBlockedWords(input.value || '');
+      if (filtered.value !== input.value) {
+        input.value = filtered.value;
+      }
+      filterWarning.classList.toggle('hidden', !filtered.changed);
+      return filtered;
+    }
+
     function percentToHue(p){
       // 120 (green) → 0 (red)
       return Math.round(120 - (120 * (p/100)));
@@ -976,7 +1016,8 @@ if (normalized === secretCode) {
     // submit handler
     form.addEventListener('submit', (e)=>{
       e.preventDefault();
-      const name = input.value.trim();
+      const filtered = applyInputFilter();
+      const name = filtered.value.trim();
       if(!name) return;
       scan(name);
     });
